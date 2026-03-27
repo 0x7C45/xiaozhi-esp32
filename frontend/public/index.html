@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>灵伴 - 天天的好朋友</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+<body>
+    <div class="mobile-container">
+        <header class="mobile-header">
+            <div class="header-top">
+                <div class="header-left">
+                    <div class="avatar-mini">
+                        <span>🤖</span>
+                    </div>
+                    <div class="header-title">
+                        <h1>✨ 灵伴 ✨</h1>
+                        <p>🎀 天天的好朋友 🎀</p>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="connection-status">
+                        <span id="statusIndicator" class="status-indicator disconnected"></span>
+                        <span id="statusText">未连接</span>
+                    </div>
+                </div>
+            </div>
+            <div class="speech-bar" id="speechBar">
+                <span class="speech-icon">💬</span>
+                <span class="speech-text" id="lingbanSpeech">🌸 你好呀！我是灵伴~ 🎀</span>
+            </div>
+            <div class="status-bar" id="lingbanStatus">
+                <span class="status-icon">💚</span>
+                <span class="status-text">待机中</span>
+            </div>
+        </header>
+
+        <main class="mobile-main">
+            <section class="card notification-card" id="notificationPanel" style="display: none;">
+                <div class="notification-icon">🏥</div>
+                <div class="notification-content">
+                    <h3>📨 通知已发送</h3>
+                    <p id="notificationText">🩺 通知护士阿姨来拔针</p>
+                    <span class="notification-time" id="notificationTime"></span>
+                </div>
+            </section>
+
+            <section class="card identity-card">
+                <div class="identity-header">
+                    <h2>👤 这是谁？</h2>
+                    <div class="recognition-tag" id="recognitionResult">
+                        <span>🔍 正在看看...</span>
+                    </div>
+                </div>
+                <div class="identity-content">
+                    <div class="identity-avatar" id="identityAvatar">
+                        <span>🎭</span>
+                    </div>
+                    <div class="identity-info">
+                        <div class="identity-name" id="identityName">🤔 猜猜看</div>
+                        <div class="identity-desc" id="identityDesc">👀 正在识别...</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card camera-card">
+                <div class="card-header">
+                    <h2>📸 灵伴视角</h2>
+                    <div class="camera-controls">
+                        <label class="switch-label">
+                            <input type="checkbox" id="autoRefresh" checked>
+                            <span>自动</span>
+                        </label>
+                        <select id="refreshInterval" class="interval-select">
+                            <option value="2" selected>2秒</option>
+                            <option value="3">3秒</option>
+                            <option value="5">5秒</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="camera-wrapper">
+                    <img id="cameraFeed" class="camera-feed" alt="摄像头画面" />
+                    <div class="camera-placeholder" id="cameraPlaceholder">
+                        <span class="placeholder-icon">📷</span>
+                        <span>等待摄像头...</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card chat-card">
+                <h2>💬 对话</h2>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="chat-empty">
+                        <span>🌸 还没有对话哦~</span>
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="chatInput" class="chat-input" placeholder="对灵伴说点什么...">
+                    <button id="sendChatBtn" class="chat-send-btn">发送</button>
+                </div>
+            </section>
+
+            <section class="card history-card">
+                <h2>📝 日志</h2>
+                <div class="history-list" id="historyList">
+                </div>
+            </section>
+        </main>
+
+        <footer class="mobile-footer">
+            <button id="connectBtn" class="footer-btn primary">
+                <span class="btn-icon">🔗</span>
+                <span class="btn-text">连接</span>
+            </button>
+            <button id="disconnectBtn" class="footer-btn danger" style="display: none;">
+                <span class="btn-icon">❌</span>
+                <span class="btn-text">断开</span>
+            </button>
+            <button id="refreshCamera" class="footer-btn">
+                <span class="btn-icon">📷</span>
+                <span class="btn-text">刷新</span>
+            </button>
+            <button id="settingsBtn" class="footer-btn">
+                <span class="btn-icon">⚙️</span>
+                <span class="btn-text">设置</span>
+            </button>
+        </footer>
+
+        <div class="settings-modal" id="settingsModal">
+            <div class="modal-overlay" id="modalOverlay"></div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>🎛️ 设置</h3>
+                    <button class="modal-close" id="modalClose">✕</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>🔗 连接模式</label>
+                        <select id="connectionMode" class="mode-select">
+                            <option value="xiaozhi">小智服务器</option>
+                            <option value="openclaw">OpenClaw AI</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="websocketGroup">
+                        <label>📡 WebSocket 地址</label>
+                        <input type="text" id="websocketUrl" value="ws://localhost:8080" placeholder="ws://localhost:8080">
+                    </div>
+                    <div class="form-group openclaw-group" style="display:none;">
+                        <label>🔗 OpenClaw Gateway</label>
+                        <input type="text" id="openclawUrl" value="ws://127.0.0.1:18789" placeholder="ws://127.0.0.1:18789">
+                    </div>
+                    <div class="form-group openclaw-group" style="display:none;">
+                        <label>🔐 Access Token</label>
+                        <input type="password" id="openclawToken" value="" placeholder="输入 OpenClaw Token">
+                    </div>
+                    <div class="form-group">
+                        <label>📷 摄像头地址</label>
+                        <input type="text" id="cameraUrl" value="http://192.168.4.1:81/stream" placeholder="http://192.168.4.1:81/stream">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log('HTML loaded');
+    </script>
+    <script src="js/app.js"></script>
+    <script>
+        console.log('Scripts loaded, checking app...');
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM ready');
+            if (window.app) {
+                console.log('App initialized:', window.app);
+            } else {
+                console.error('App NOT initialized!');
+            }
+        });
+    </script>
+</body>
+</html>
